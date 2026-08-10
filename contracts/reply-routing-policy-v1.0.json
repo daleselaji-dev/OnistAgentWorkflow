@@ -1,0 +1,8 @@
+{
+  "version":"v1.0",
+  "purpose":"Normalize reply classes into upstream updates and safe execution interrupts.",
+  "default_business_reply_pause_scope":"ACCOUNT_PRODUCT",
+  "non_business_reply_pause_scope":{"OOO":"PERSON","AUTO_REPLY":"PERSON"},
+  "canonical_update_targets":{"Intent":"QUALIFICATION.intent","Timing":"QUALIFICATION.timing","Pain":"QUALIFICATION.pain","Capacity":"QUALIFICATION.capacity_strength","TechnicalFit":"QUALIFICATION.hard_gate.technical_envelope","Qualification":"QUALIFICATION","EvidenceLedger":"EVIDENCE","BuyingCommittee":"BUYING_COMMITTEE","CompetitiveContext":"EVIDENCE.competitive_context","Suppression":"EXECUTION.suppression","ExecutionState":"EXECUTION.sequence_state"},
+  "rules":["Any substantive human reply pauses automated outreach for the same account x product adapter before classification.","OOO and machine auto-replies pause only the person thread unless another interrupt applies.","Explicit opt-out follows the suppression scope expressed or required by policy.","Reply classification may update account truth immediately but never mutates global production policy directly."]
+}
