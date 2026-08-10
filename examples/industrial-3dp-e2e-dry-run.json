@@ -1,0 +1,13 @@
+{
+  "example_id":"industrial-3dp-e2e-dry-run",
+  "product_adapter_id":"INDUSTRIAL_3DP_BASE",
+  "account_id":"acct-demo-3dp",
+  "discovery":{"candidate":true,"open_world_complete":false},
+  "evidence":{"fixture_outsourcing":"SUPPORTED","technical_envelope":"PASS"},
+  "qualification":{"fit":"STRONG","pain":"MATERIAL","intent":"TOPIC_RESEARCH","timing":"ACTIVE_PROJECT","action_class":"PRIORITIZE_OUTBOUND"},
+  "buying_committee":{"primary_roles":["PROBLEM_OWNER","ECONOMIC_BUYER"]},
+  "value_hypothesis":{"fact":"fixture outsourcing is observed","hypothesis":"lead time may constrain iteration","proposal":"review one real fixture workflow"},
+  "execution":{"mode":"DRY_RUN","live_send":false},
+  "measurement":{"pilot_outcome":"PAIN_CONFIRMED_MEETING"},
+  "learning":{"causal_grade":"C0","allowed_update":"ACCOUNT_MEMORY_ONLY"}
+}
