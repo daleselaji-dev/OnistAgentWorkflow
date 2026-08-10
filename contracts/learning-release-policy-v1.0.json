@@ -1,0 +1,12 @@
+{
+  "version":"v1.0",
+  "purpose":"Differentiate truth/safety repairs from performance optimization so policy promotion evidence is proportional to change risk.",
+  "update_classes":{
+    "ACCOUNT_FACT_UPDATE":{"max_scope":"ACCOUNT_MEMORY","minimum_causal_grade":"C0","offline_eval":"NOT_REQUIRED","business_experiment":"NOT_REQUIRED"},
+    "EVAL_DATASET_CORRECTION":{"max_scope":"EVAL_DATASET","minimum_causal_grade":"C0","offline_eval":"NOT_REQUIRED","business_experiment":"NOT_REQUIRED"},
+    "SAFETY_CORRECTNESS_FIX":{"max_scope":"PRODUCTION_POLICY","minimum_causal_grade":"C0","offline_eval":"PASS_REQUIRED","business_experiment":"NOT_REQUIRED_IF_CHANGE_ONLY_REMOVES_UNSAFE_OR_FALSE_BEHAVIOR","human_review":true,"rollback_required":true},
+    "ROUTING_OR_RANKING_OPTIMIZATION":{"max_scope":"PRODUCTION_POLICY","minimum_causal_grade_for_canary":"C2","minimum_causal_grade_for_broad_promotion":"C3","offline_eval":"PASS_REQUIRED","guardrails":"PASS_REQUIRED"},
+    "PERSUASION_OR_SEQUENCE_OPTIMIZATION":{"max_scope":"PRODUCTION_POLICY","minimum_causal_grade_for_canary":"C3","minimum_causal_grade_for_broad_promotion":"C3","replication_for_broad_rollout":"REQUIRED_WHEN_MATERIAL","offline_eval":"PASS_REQUIRED","guardrails":"PASS_REQUIRED"}
+  },
+  "hard_blocks":["C0/C1 association used to promote a performance-optimization policy","business metric improves while factuality/suppression/duplicate-send/policy guardrail fails","candidate changes its own success metric after observing outcomes","production policy changes without a rollback target/version"]
+}
