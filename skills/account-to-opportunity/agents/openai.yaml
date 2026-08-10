@@ -1,0 +1,4 @@
+interface:
+  display_name: "Account to Opportunity"
+  short_description: "Run evidence-grounded B2B prospecting and sales-intelligence workflows"
+  default_prompt: "Use $account-to-opportunity to discover, research, qualify, route, persuade, prepare actions, measure, learn, or review an Account-to-Opportunity sales workflow with evidence, policy, and learning gates."

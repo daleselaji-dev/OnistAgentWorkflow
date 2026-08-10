@@ -1,0 +1,13 @@
+{
+  "example_id":"clo-set-e2e-dry-run",
+  "product_adapter_id":"CLOSET_3D_WORKSPACE",
+  "account_id":"acct-demo-clo-set",
+  "discovery":{"candidate":true,"open_world_complete":false},
+  "evidence":{"multi_team_3d_workflow":"SUPPORTED","version_review_pain":"SUPPORTED"},
+  "qualification":{"fit":"STRONG","pain":"MATERIAL","intent":"UNKNOWN","timing":"STRUCTURAL_TRIGGER","action_class":"DISCOVERY_OUTREACH"},
+  "buying_committee":{"primary_roles":["PROBLEM_OWNER","PRACTITIONER_USER"]},
+  "value_hypothesis":{"fact":"multi-team 3D collaboration is observed","hypothesis":"version/review handoffs may create rework","proposal":"map one style's review workflow"},
+  "execution":{"mode":"DRY_RUN","live_send":false},
+  "measurement":{"pilot_outcome":"PAIN_CONFIRMED_MEETING"},
+  "learning":{"causal_grade":"C0","allowed_update":"ACCOUNT_MEMORY_ONLY"}
+}

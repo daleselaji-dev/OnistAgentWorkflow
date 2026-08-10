@@ -1,0 +1,10 @@
+{
+  "version": "v1.0",
+  "purpose": "Canonical cross-stage identifiers and semantic mappings for Account-to-Opportunity runtime integration.",
+  "product_adapter_ids": ["INDUSTRIAL_3DP_BASE","CLO_FASHION_DPC","MD_CG_CLOTH","CLOFAB_FABRIC_DIGITIZATION","CLOSET_3D_WORKSPACE"],
+  "action_classes": ["REJECT_ADAPTER","ROUTE_ALTERNATE_PRODUCT","HOLD_RESEARCH","MONITOR_NURTURE","DISCOVERY_OUTREACH","PRIORITIZE_OUTBOUND","FAST_TRACK"],
+  "buying_roles": ["PROBLEM_OWNER","PRACTITIONER_USER","CHAMPION_CANDIDATE","TECHNICAL_EVALUATOR","IMPLEMENTATION_OWNER","ECONOMIC_BUYER","EXECUTIVE_SPONSOR","PROCUREMENT_COMMERCIAL_GATE","IT_SECURITY_DATA_GATE","LEGAL_COMPLIANCE_GATE","INFLUENCER","BLOCKER_STATUS_QUO","EXTERNAL_ADVISOR"],
+  "personalization_ceilings": ["NONE","ROLE_ONLY","ROLE_PLUS_SCOPE","BEHAVIOR_SUPPORTED","DEAL_CONFIRMED"],
+  "canonical_qualification_dimensions": ["fit","pain","intent","timing","capacity_strength","buyer_expected_value","seller_expected_value"],
+  "component_ids": ["ROUTER","DISCOVERY","EVIDENCE","QUALIFICATION","BUYING_COMMITTEE","PERSUASION","EXECUTION","MEASUREMENT"]
+}

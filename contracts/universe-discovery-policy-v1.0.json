@@ -1,0 +1,11 @@
+{
+  "version":"v1.0",
+  "objective":"Maximize relevant account recall without pretending the open-world market universe is complete.",
+  "input":"Product Adapter(s) + territory + access policy + discovery budget + optional known-positive benchmark",
+  "output":"Candidate seeds with discovery provenance for entity resolution; never a qualified-account label.",
+  "source_families":["official registries/directories","industry directories/taxonomies","web search","job market","event/exhibitor/association lists","partner/customer ecosystems","licensed account databases","technology/intent signals","internal CRM/user seeds"],
+  "query_expansion_axes":["job-to-be-done","role","pain proxy","technology","trigger","industry synonym","geography/language","competitor/alternative"],
+  "dedupe_rule":"Dedupe conservatively by domain/registry/alias evidence; unresolved brand-parent/subsidiary relationships go to entity resolution instead of forced merge.",
+  "stop_rule":"Stop only after planned source-family coverage is acceptable AND known-positive recall target is met when benchmark exists AND marginal unique-account yield has plateaued; otherwise record a source/budget gap. Open-world runs must not claim total completeness.",
+  "hard_fails":["candidate discovery presented as qualification","one source family treated as the market","blocked/unauthorized source substituted with scraping","brand/subsidiary duplicates forced into one account without evidence","search absence used as account non-existence","OPEN_WORLD_NOT_COMPLETE omitted when no closed sampling frame exists"]
+}

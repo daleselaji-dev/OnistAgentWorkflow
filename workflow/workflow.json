@@ -1,0 +1,33 @@
+{
+  "workflow_id": "ONIST_ACCOUNT_TO_OPPORTUNITY_V1",
+  "version": "1.0.0",
+  "certification_scope": "DRY_RUN_ENGINEERING",
+  "stages": [
+    {"id":"ROUTER","kind":"agentic_bounded","next":["DISCOVERY"]},
+    {"id":"DISCOVERY","kind":"agentic_search","next":["EVIDENCE","HOLD"]},
+    {"id":"EVIDENCE","kind":"mixed","next":["QUALIFICATION","HOLD"]},
+    {"id":"QUALIFICATION","kind":"deterministic_policy","next":["BUYING_COMMITTEE","HOLD","REJECT"]},
+    {"id":"BUYING_COMMITTEE","kind":"agentic_bounded","next":["PERSUASION","HOLD"]},
+    {"id":"PERSUASION","kind":"agentic_bounded","next":["EXECUTION","HOLD"]},
+    {"id":"EXECUTION","kind":"deterministic_policy_side_effect","next":["MEASUREMENT","HOLD","PAUSED"]},
+    {"id":"MEASUREMENT","kind":"deterministic_analytics","next":["LEARNING"]},
+    {"id":"LEARNING","kind":"deterministic_release_gate","next":["ROUTER","HOLD"]}
+  ],
+  "global_invariants": [
+    "stable_lineage_ids",
+    "decision_claims_traceable_to_evidence",
+    "hard_gates_non_compensable",
+    "account_intent_not_person_intent",
+    "borrowed_roi_forbidden",
+    "suppression_jurisdiction_approval_idempotency_before_side_effect",
+    "provider_uncertain_reconcile_before_retry",
+    "business_reply_pauses_account_product_motion",
+    "attribution_not_causality",
+    "c0_c1_no_performance_policy_promotion"
+  ],
+  "canonical_contracts": [
+    "../contracts/canonical-ontology-v1.0.json",
+    "../contracts/cross-stage-handoff-contract-v1.0.json",
+    "../contracts/stage-eval-matrix-v1.0.json"
+  ]
+}

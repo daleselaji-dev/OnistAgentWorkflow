@@ -1,0 +1,14 @@
+{
+  "version": "v1.0",
+  "purpose": "Normative integration contract over chapter-local schemas.",
+  "canonical_keys": ["account_id","product_adapter_id","artifact_id","artifact_version","content_hash","created_at"],
+  "handoffs": [
+    {"from":"DISCOVERY","to":"EVIDENCE","required":["candidate_id","observed_name","adapter_hypotheses","discovery_evidence"],"forbidden":["qualified_label"]},
+    {"from":"EVIDENCE","to":"QUALIFICATION","required":["account_id","ledger_version","claim_ids","decision_readiness"],"rule":"Qualification must reference the exact evidence-ledger version/hash used."},
+    {"from":"QUALIFICATION","to":"BUYING_COMMITTEE","required":["account_id","adapter_id","action_class","next_sales_goal","qualification_artifact_ref"]},
+    {"from":"BUYING_COMMITTEE","to":"PERSUASION","required":["account_id","adapter_id","target_contact_id","target_roles","personalization_ceiling","committee_artifact_ref"]},
+    {"from":"PERSUASION","to":"EXECUTION","required":["account_id","adapter_id","value_packet_ref","target_contact_id","qualification_action_class"],"rule":"Renderer cannot mutate epistemic labels."},
+    {"from":"EXECUTION","to":"MEASUREMENT","required":["action_id","sequence_id","execution_trace_id","account_id","adapter_id","message_version","policy_version"]},
+    {"from":"MEASUREMENT","to":"LEARNING","required":["event_refs","experiment_or_observational_grade","data_quality","guardrails"],"rule":"Account truth may update at C0; performance policy promotion follows learning-release-policy-v1.0."}
+  ]
+}

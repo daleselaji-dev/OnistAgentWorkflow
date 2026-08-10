@@ -1,0 +1,11 @@
+{
+  "version":"v0.9",
+  "grades":[
+    {"id":"C0","name":"OBSERVATION_ONLY","examples":["single reply","single win/loss","before/after without control"],"allowed":"account state + case logging","global_policy":"NO"},
+    {"id":"C1","name":"ATTRIBUTED_ASSOCIATION","examples":["CRM multi-touch attribution","funnel correlation","regression without credible identification"],"allowed":"cohort hypothesis + prioritization for future test","global_policy":"NO"},
+    {"id":"C2","name":"QUASI_EXPERIMENTAL","requirements":["pre-specified estimand","confounder assumptions","robustness/refutation or sensitivity checks","data-quality pass"],"allowed":"cautious candidate policy / bounded pilot","global_policy":"HUMAN_REVIEW"},
+    {"id":"C3","name":"VALID_RANDOMIZED","requirements":["correct randomization unit","ITT primary","SRM/data-quality pass","contamination reviewed","predefined horizon","guardrails pass"],"allowed":"canary or bounded promotion","global_policy":"ELIGIBLE_WITH_RELEASE_GATE"},
+    {"id":"C4","name":"REPLICATED_TRANSPORTABLE","requirements":["C3 evidence more than once","external-validity check","no major guardrail regression"],"allowed":"broader promotion","global_policy":"ELIGIBLE"}
+  ],
+  "rules":["A higher grade cannot repair failed data-quality checks.","CRM attribution never exceeds C1 by itself.","A single customer outcome is C0 even if commercially large.","Observational causal analysis cannot exceed C2 without randomization.","Randomization at contact level is invalid for a multi-thread account treatment when contacts can influence the same opportunity; use account/account-product clusters."]
+}

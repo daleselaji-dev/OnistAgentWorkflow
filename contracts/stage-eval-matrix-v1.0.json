@@ -1,0 +1,14 @@
+{
+  "version":"v1.0",
+  "purpose":"One promotion gate per pipeline stage plus cross-stage safety/trace checks.",
+  "stages":[
+    {"stage":"DISCOVERY","quality_metrics":["known_positive_recall","marginal_unique_yield","duplicate_rate","irrelevant_candidate_rate"],"hard_gates":["no fake completeness","no unauthorized source access","candidate != qualified account"]},
+    {"stage":"EVIDENCE","quality_metrics":["entity_error_rate","claim_entailment_precision","contradiction_recall","freshness_accuracy","provenance_completeness"],"hard_gates":["no wrong entity merge","no unsupported decision-bearing claim","not-found != verified negative"]},
+    {"stage":"QUALIFICATION","quality_metrics":["expert_action_class_agreement","gate_correctness","hold_reason_precision"],"hard_gates":["hard gate cannot be score-compensated","no uncalibrated probability presented as calibrated"]},
+    {"stage":"BUYING_COMMITTEE","quality_metrics":["role_precision","required_role_coverage","current_employment_accuracy"],"hard_gates":["company intent != personal intent","title alone cannot justify personal ownership claim"]},
+    {"stage":"PERSUASION","quality_metrics":["supported_claim_rate","question_information_gain","proof_transferability_fit"],"hard_gates":["no borrowed ROI","no unsupported target pain","renderer cannot upgrade epistemic label"]},
+    {"stage":"EXECUTION","quality_metrics":["duplicate_send_rate","suppression_violation_rate","provider_reconciliation_success","account_collision_rate"],"hard_gates":["unknown jurisdiction blocks external send","reply pauses automation","no blind retry","suppression cannot be bypassed"]},
+    {"stage":"MEASUREMENT_LEARNING","quality_metrics":["event_join_rate","assignment_completeness","SRM","guardrail_rate","incremental_primary_outcome"],"hard_gates":["CRM attribution != causal lift","C0/C1 cannot promote performance optimization","data-quality failure blocks causal learning","rollback target required"]}
+  ],
+  "cross_stage":["canonical account_id and adapter_id preserved","immutable refs/hashes make decision-to-action lineage reconstructable","manual correction becomes eval evidence before global policy change","cost/latency monitored separately from business value"]
+}
