@@ -8,6 +8,7 @@
 - Certified dry-run workflow: `workflow/workflow.json` + `workflow/runtime.py`
 - Reusable skill: `skills/account-to-opportunity/SKILL.md`
 - Canonical integration version: v1.0
+- Approved upgrade plan: `docs/upgrade-plans/foreign-trade-smart-hardware-v1.md` (foreign-trade smart-hardware/IoT domain; Phase 0 complete, Phase 1 pending execution)
 
 ## Purpose
 
@@ -45,4 +46,4 @@ Read in order:
 
 ## Next safe action
 
-Select one real product adapter + territory and implement Phase 1 read-only intelligence connectors. Do not enable live sending before production-readiness review.
+Execute Phase 1 of `docs/upgrade-plans/foreign-trade-smart-hardware-v1.md`: add the `foreign-trade-lead-gen` skill, the `SMART_HARDWARE_IOT_EXPORT` adapter, v1.1 additive contracts, the smart-hardware dry-run example and new contract tests, without modifying any v1.0 certified artifact. Follow `docs/upgrade-plans/next-agent-brief.md`. Do not enable live sending before production-readiness review.
