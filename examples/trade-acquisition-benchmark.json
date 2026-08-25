@@ -1,0 +1,402 @@
+{
+  "benchmark_id": "trade-acquisition-benchmark-v1",
+  "purpose": "Repeatable dry-run benchmark for the trade-acquisition loop: discovery recall/diversity, dossier completeness, channel-draft compliance, state-machine legality, cadence discipline, and loop repeatability.",
+  "discovery_benchmark": {
+    "adapter": "INDUSTRIAL_3DP_BASE",
+    "territory": "DACH",
+    "open_world_complete_claimed": false,
+    "known_positives": ["kp-01", "kp-02", "kp-03", "kp-04", "kp-05", "kp-06", "kp-07", "kp-08"],
+    "retrieved_candidates": [
+      {"candidate_id": "kp-01", "source_family": "trade_fair_exhibitor"},
+      {"candidate_id": "kp-02", "source_family": "industry_directory"},
+      {"candidate_id": "kp-03", "source_family": "job_market"},
+      {"candidate_id": "kp-04", "source_family": "web_search"},
+      {"candidate_id": "kp-05", "source_family": "association_list"},
+      {"candidate_id": "kp-06", "source_family": "job_market"},
+      {"candidate_id": "kp-07", "source_family": "trade_fair_exhibitor"},
+      {"candidate_id": "cand-101", "source_family": "web_search"},
+      {"candidate_id": "cand-102", "source_family": "industry_directory"},
+      {"candidate_id": "cand-103", "source_family": "trade_fair_exhibitor"},
+      {"candidate_id": "cand-104", "source_family": "association_list"},
+      {"candidate_id": "cand-105", "source_family": "job_market"}
+    ],
+    "targets": {"min_recall": 0.75, "min_source_families": 4}
+  },
+  "evidence_completeness": {
+    "required_claims": ["entity_identity", "business_activity_fit", "timing_trigger", "contactable_role", "jurisdiction_zone"],
+    "ledgers": [
+      {
+        "ledger_id": "dossier-complete",
+        "expected_complete": true,
+        "claims": {
+          "entity_identity": {"status": "SUPPORTED", "source": "registry:HRB-88123"},
+          "business_activity_fit": {"status": "SUPPORTED", "source": "site:products-page"},
+          "timing_trigger": {"status": "SUPPORTED", "source": "jobpost:additive-engineer-2026-07"},
+          "contactable_role": {"status": "SUPPORTED", "source": "team-page:head-of-manufacturing"},
+          "jurisdiction_zone": {"status": "SUPPORTED", "source": "registry:country-DE"}
+        }
+      },
+      {
+        "ledger_id": "dossier-gap",
+        "expected_complete": false,
+        "expected_missing": ["timing_trigger", "jurisdiction_zone"],
+        "claims": {
+          "entity_identity": {"status": "SUPPORTED", "source": "registry:HRB-90210"},
+          "business_activity_fit": {"status": "SUPPORTED", "source": "site:capabilities"},
+          "contactable_role": {"status": "SUPPORTED", "source": "linkedin-page:plant-manager"},
+          "jurisdiction_zone": {"status": "SUPPORTED", "source": ""}
+        }
+      }
+    ]
+  },
+  "timing_cases": [
+    {
+      "case_id": "fresh-hiring-plus-expansion",
+      "today": 0,
+      "triggers": [
+        {"trigger_id": "HIRING_SIGNAL", "observed_day": -10, "evidence_ref": "claim-hiring-001"},
+        {"trigger_id": "EXPANSION", "observed_day": -40, "evidence_ref": "claim-expansion-002"}
+      ],
+      "expected_recommendation": "OUTBOUND_NOW"
+    },
+    {
+      "case_id": "single-competitor-move",
+      "today": 0,
+      "triggers": [
+        {"trigger_id": "COMPETITOR_MOVE", "observed_day": -30, "evidence_ref": "claim-peer-003"}
+      ],
+      "expected_recommendation": "DISCOVERY_OUTREACH"
+    },
+    {
+      "case_id": "expired-trigger-only",
+      "today": 0,
+      "triggers": [
+        {"trigger_id": "HIRING_SIGNAL", "observed_day": -100, "evidence_ref": "claim-hiring-old"}
+      ],
+      "expected_recommendation": "MONITOR_NURTURE"
+    }
+  ],
+  "draft_fixtures": [
+    {
+      "fixture_id": "email-3dp-good",
+      "expected_gate": "PASS",
+      "draft": {
+        "channel": "EMAIL",
+        "touch_number": 1,
+        "subject": "Fixture lead time at Nordwerk",
+        "body": "Hi Ms. Keller — saw your posting for an additive manufacturing engineer for the Stuttgart line. If your jigs and fixtures are still outsourced, iteration may be waiting on external machine-shop queues. Automotive tooling teams have moved fixture turnaround from weeks to days by printing in-house; whether that mechanism applies depends on your part mix and materials. Are fixture lead times currently gating line changeovers? If useful, I can walk through one of your live fixture workflows in 20 minutes.",
+        "value_packet_ref": "vhp-3dp-001",
+        "fact_claim_ids": ["claim-hiring-001", "claim-fixture-003"],
+        "sender_identity_disclosed": true,
+        "opt_out_affordance": true,
+        "scheduled_local_time": "09:30",
+        "recipient_timezone_known": true
+      }
+    },
+    {
+      "fixture_id": "email-clo-good",
+      "expected_gate": "PASS",
+      "draft": {
+        "channel": "EMAIL",
+        "touch_number": 1,
+        "subject": "Sampling rounds at Blue Atelier",
+        "body": "Hi Maya — noticed the 3D fashion designer (CLO) opening on your careers page. If sample development is still physical-first, each fit iteration may be adding courier weeks before market dates. Brands moving to 3D-first development have cut physical rounds per style; whether that transfers depends on your fit process and factories. Are sample iterations the bottleneck ahead of your next market week? Happy to map one style's sampling flow together in 20 minutes.",
+        "value_packet_ref": "vhp-clo-001",
+        "fact_claim_ids": ["claim-clo-hiring-004"],
+        "sender_identity_disclosed": true,
+        "opt_out_affordance": true
+      }
+    },
+    {
+      "fixture_id": "email-roi-promise",
+      "expected_gate": "FAIL",
+      "expected_reason_substring": "ROI_GUARANTEE_EN",
+      "draft": {
+        "channel": "EMAIL",
+        "touch_number": 1,
+        "subject": "Cut your sampling costs",
+        "body": "Hi Maya, I guarantee our 3D workflow will lower your sampling budget this season. Let me know when to start.",
+        "value_packet_ref": "vhp-clo-001",
+        "fact_claim_ids": ["claim-clo-hiring-004"],
+        "sender_identity_disclosed": true,
+        "opt_out_affordance": true
+      }
+    },
+    {
+      "fixture_id": "email-unresolved-placeholder",
+      "expected_gate": "FAIL",
+      "expected_reason_substring": "unresolved placeholder",
+      "draft": {
+        "channel": "EMAIL",
+        "touch_number": 1,
+        "subject": "Fixture lead time at {{COMPANY}}",
+        "body": "Hi {{FIRST_NAME}} — saw your posting for an additive manufacturing engineer. Are fixture lead times gating changeovers?",
+        "value_packet_ref": "vhp-3dp-001",
+        "fact_claim_ids": ["claim-hiring-001"],
+        "sender_identity_disclosed": true,
+        "opt_out_affordance": true
+      }
+    },
+    {
+      "fixture_id": "email-overlength",
+      "expected_gate": "FAIL",
+      "expected_reason_substring": "word limit",
+      "draft": {
+        "channel": "EMAIL",
+        "touch_number": 1,
+        "subject": "Additive tooling for your production lines",
+        "body": "Hi Ms. Keller — I noticed your company is expanding the Stuttgart facility and hiring for several manufacturing engineering roles, which usually means new lines, new jigs, new fixtures, and a long queue at the external machine shop that supplies them. When teams run high-mix low-volume production the fixture backlog becomes the silent constraint on every changeover, and each engineering change order adds another loop through quoting, machining, shipping, inspection, and rework before the line can move again. In many plants this cycle consumes three to six weeks per fixture family, and the engineering team quietly plans around it instead of fixing it. In-house additive tooling changes the queue structure completely because the printer sits next to the line and the CAD file becomes the fixture overnight without any external quoting loop at all, and the effect compounds across every subsequent iteration your team runs this year. I would like to discuss all of this and much more in a longer meeting with your full team at your earliest convenience whenever that might be possible for everyone involved.",
+        "value_packet_ref": "vhp-3dp-001",
+        "fact_claim_ids": ["claim-hiring-001"],
+        "sender_identity_disclosed": true,
+        "opt_out_affordance": true
+      }
+    },
+    {
+      "fixture_id": "email-missing-claims",
+      "expected_gate": "FAIL",
+      "expected_reason_substring": "fact_claim_ids",
+      "draft": {
+        "channel": "EMAIL",
+        "touch_number": 1,
+        "subject": "Fixture lead time",
+        "body": "Hi Ms. Keller — are fixture lead times gating line changeovers at your plant?",
+        "value_packet_ref": "vhp-3dp-001",
+        "fact_claim_ids": [],
+        "sender_identity_disclosed": true,
+        "opt_out_affordance": true
+      }
+    },
+    {
+      "fixture_id": "email-spam-opener",
+      "expected_gate": "FAIL",
+      "expected_reason_substring": "SPAM_OPENER",
+      "draft": {
+        "channel": "EMAIL",
+        "touch_number": 1,
+        "subject": "Business cooperation",
+        "body": "Dear Sir, we are a factory with good price and quality. Please see our catalog and send your inquiry.",
+        "value_packet_ref": "vhp-3dp-001",
+        "fact_claim_ids": ["claim-hiring-001"],
+        "sender_identity_disclosed": true,
+        "opt_out_affordance": true
+      }
+    },
+    {
+      "fixture_id": "whatsapp-3dp-good",
+      "expected_gate": "PASS",
+      "draft": {
+        "channel": "WHATSAPP",
+        "touch_number": 4,
+        "first_on_channel": true,
+        "body": "Hello Mr. Tan, this is Li Wei from Onist 3D — we spoke at the TCT Asia booth about additive tooling. You mentioned fixture lead times on your CNC line. Would a short call this week to compare turnaround options be useful?",
+        "value_packet_ref": "vhp-3dp-002",
+        "fact_claim_ids": ["claim-tradeshow-005"],
+        "consent_verified": true,
+        "scheduled_local_time": "10:00",
+        "recipient_timezone_known": true
+      }
+    },
+    {
+      "fixture_id": "whatsapp-clo-good",
+      "expected_gate": "PASS",
+      "draft": {
+        "channel": "WHATSAPP",
+        "touch_number": 4,
+        "first_on_channel": true,
+        "body": "Hi Ms. Reyes, Ana from Onist here — following up on your note at the Premiere Vision booth about 3D sampling. Would a 20-minute call next week on your fit-approval flow work for you?",
+        "value_packet_ref": "vhp-clo-002",
+        "fact_claim_ids": ["claim-clo-tradeshow-006"],
+        "consent_verified": true
+      }
+    },
+    {
+      "fixture_id": "whatsapp-no-consent",
+      "expected_gate": "FAIL",
+      "expected_reason_substring": "consent",
+      "draft": {
+        "channel": "WHATSAPP",
+        "touch_number": 1,
+        "body": "Hello, we are a 3D printing supplier. Do you need prototypes?",
+        "value_packet_ref": "vhp-3dp-002",
+        "fact_claim_ids": ["claim-tradeshow-005"],
+        "consent_verified": false
+      }
+    },
+    {
+      "fixture_id": "whatsapp-late-schedule",
+      "expected_gate": "FAIL",
+      "expected_reason_substring": "outside channel local window",
+      "draft": {
+        "channel": "WHATSAPP",
+        "touch_number": 4,
+        "first_on_channel": true,
+        "body": "Hello Mr. Tan, this is Li Wei from Onist 3D — following up on our TCT Asia conversation about fixture turnaround. Would a short call this week be useful?",
+        "value_packet_ref": "vhp-3dp-002",
+        "fact_claim_ids": ["claim-tradeshow-005"],
+        "consent_verified": true,
+        "scheduled_local_time": "21:00",
+        "recipient_timezone_known": true
+      }
+    },
+    {
+      "fixture_id": "linkedin-note-3dp-good",
+      "expected_gate": "PASS",
+      "draft": {
+        "channel": "LINKEDIN",
+        "message_type": "connection_note",
+        "touch_number": 3,
+        "first_on_channel": true,
+        "body": "Hi Stefan — I work with manufacturing engineering teams on in-house additive tooling. Your team's posting for a fixtures engineer caught my eye. Would value connecting to exchange notes on tooling workflows.",
+        "value_packet_ref": "vhp-3dp-001",
+        "fact_claim_ids": ["claim-hiring-001"]
+      }
+    },
+    {
+      "fixture_id": "linkedin-msg-clo-good",
+      "expected_gate": "PASS",
+      "draft": {
+        "channel": "LINKEDIN",
+        "message_type": "message",
+        "touch_number": 3,
+        "first_on_channel": true,
+        "connection_accepted": true,
+        "body": "Thanks for connecting, Sofia. I saw Blue Atelier is hiring a CLO designer — usually a sign a team is moving sampling into 3D. Curious how far along that shift is on your side: are fit sessions still driven by physical samples? No pitch — genuinely interested in how you sequence it.",
+        "value_packet_ref": "vhp-clo-001",
+        "fact_claim_ids": ["claim-clo-hiring-004"]
+      }
+    },
+    {
+      "fixture_id": "linkedin-first-msg-link",
+      "expected_gate": "FAIL",
+      "expected_reason_substring": "cannot carry links",
+      "draft": {
+        "channel": "LINKEDIN",
+        "message_type": "message",
+        "touch_number": 3,
+        "first_on_channel": true,
+        "connection_accepted": true,
+        "body": "Thanks for connecting! Check out our case studies here: https://example.com/cases — let me know what you think.",
+        "value_packet_ref": "vhp-clo-001",
+        "fact_claim_ids": ["claim-clo-hiring-004"]
+      }
+    }
+  ],
+  "loop_rounds": [
+    {
+      "round_id": "round-1",
+      "threads": [
+        {
+          "thread_id": "r1-3dp-qualified",
+          "account_id": "acct-bm-3dp-01",
+          "adapter_id": "INDUSTRIAL_3DP_BASE",
+          "person_id": "person-me-01",
+          "role": "PROBLEM_OWNER",
+          "value_packet_ref": "vhp-3dp-001",
+          "steps": [
+            {"event": "send_approved", "day": 0, "payload": {"draft": {"channel": "EMAIL", "touch_number": 1, "subject": "Fixture lead time at Nordwerk", "body": "Hi Ms. Keller — saw your posting for an additive manufacturing engineer. If fixtures are outsourced, iteration may wait on external queues. Are fixture lead times gating changeovers? If useful, I can review one live fixture workflow with you in 20 minutes.", "value_packet_ref": "vhp-3dp-001", "fact_claim_ids": ["claim-hiring-001"], "sender_identity_disclosed": true, "opt_out_affordance": true}}},
+            {"event": "no_reply_window_elapsed", "day": 3},
+            {"event": "followup_due", "day": 3, "payload": {"channel": "EMAIL"}},
+            {"event": "reply_substantive", "day": 5},
+            {"event": "classified_meeting_interest", "day": 5},
+            {"event": "slot_accepted", "day": 6},
+            {"event": "confirmation_pack_complete", "day": 7, "payload": {"confirmation_pack": {"agenda_one_liner": "review one live fixture workflow", "attendee_roles_both_sides": "ME lead + applications engineer", "recipient_timezone_confirmed": "Europe/Berlin", "duration_minutes": 20, "dial_in_or_location": "video call", "evidence_summary_ref": "evidence-brief-r1", "t24h_reconfirm_scheduled": true}}},
+            {"event": "meeting_held", "day": 8},
+            {"event": "outcome_qualified", "day": 8, "payload": {"debrief": {"notes_to_evidence_ledger": "3-week fixture lead time confirmed", "reply_classification": "PAIN_CONFIRMED", "next_action": "sample part evaluation"}}}
+          ]
+        },
+        {
+          "thread_id": "r1-clo-nurture-with-probe",
+          "account_id": "acct-bm-clo-01",
+          "adapter_id": "CLO_FASHION_DPC",
+          "person_id": "person-pd-01",
+          "role": "PROBLEM_OWNER",
+          "value_packet_ref": "vhp-clo-001",
+          "steps": [
+            {"event": "send_approved", "day": 0, "payload": {"draft": {"channel": "EMAIL", "touch_number": 1, "subject": "Sampling rounds at Blue Atelier", "body": "Hi Maya — noticed the CLO designer opening on your careers page. If sampling is physical-first, fit iterations may be adding courier weeks. Are sample rounds the bottleneck before market week? Happy to map one style's flow in 20 minutes.", "value_packet_ref": "vhp-clo-001", "fact_claim_ids": ["claim-clo-hiring-004"], "sender_identity_disclosed": true, "opt_out_affordance": true}}},
+            {"event": "no_reply_window_elapsed", "day": 3},
+            {"event": "followup_due", "day": 2, "payload": {"channel": "EMAIL"}, "expect_blocked": true},
+            {"event": "followup_due", "day": 5, "payload": {"channel": "EMAIL"}},
+            {"event": "followup_due", "day": 9, "payload": {"channel": "EMAIL"}},
+            {"event": "followup_due", "day": 14, "payload": {"channel": "EMAIL"}},
+            {"event": "sequence_exhausted", "day": 17}
+          ]
+        }
+      ]
+    },
+    {
+      "round_id": "round-2",
+      "threads": [
+        {
+          "thread_id": "r2-3dp-reschedule-nurture",
+          "account_id": "acct-bm-3dp-02",
+          "adapter_id": "INDUSTRIAL_3DP_BASE",
+          "person_id": "person-me-02",
+          "role": "TECHNICAL_EVALUATOR",
+          "value_packet_ref": "vhp-3dp-002",
+          "steps": [
+            {"event": "send_approved", "day": 0, "payload": {"draft": {"channel": "EMAIL", "touch_number": 1, "subject": "Bracket prototyping queue", "body": "Hi Mr. Osei — your team's post about the new bracket line mentioned prototype delays. If prototypes queue behind production machining, design verification may slip. Is that queue visible in your current lead times? I can share how similar teams restructured it.", "value_packet_ref": "vhp-3dp-002", "fact_claim_ids": ["claim-launch-007"], "sender_identity_disclosed": true, "opt_out_affordance": true}}},
+            {"event": "reply_substantive", "day": 4},
+            {"event": "classified_meeting_interest", "day": 4},
+            {"event": "slot_accepted", "day": 5},
+            {"event": "confirmation_pack_complete", "day": 5, "payload": {"confirmation_pack": {"agenda_one_liner": "prototype queue review", "attendee_roles_both_sides": "technical evaluator + applications engineer"}}, "expect_blocked": true},
+            {"event": "confirmation_pack_complete", "day": 6, "payload": {"confirmation_pack": {"agenda_one_liner": "prototype queue review", "attendee_roles_both_sides": "technical evaluator + applications engineer", "recipient_timezone_confirmed": "Africa/Accra", "duration_minutes": 25, "dial_in_or_location": "video call", "evidence_summary_ref": "evidence-brief-r2", "t24h_reconfirm_scheduled": true}}},
+            {"event": "no_show", "day": 7},
+            {"event": "slot_accepted", "day": 8},
+            {"event": "confirmation_pack_complete", "day": 9, "payload": {"confirmation_pack": {"agenda_one_liner": "prototype queue review", "attendee_roles_both_sides": "technical evaluator + applications engineer", "recipient_timezone_confirmed": "Africa/Accra", "duration_minutes": 25, "dial_in_or_location": "video call", "evidence_summary_ref": "evidence-brief-r2", "t24h_reconfirm_scheduled": true}}},
+            {"event": "meeting_held", "day": 10},
+            {"event": "outcome_not_now", "day": 10, "payload": {"debrief": {"notes_to_evidence_ledger": "budget cycle opens next quarter", "reply_classification": "TIMING_NOT_NOW", "next_action": "re-engage on budget-cycle trigger"}}}
+          ]
+        },
+        {
+          "thread_id": "r2-clo-optout",
+          "account_id": "acct-bm-clo-02",
+          "adapter_id": "CLOSET_3D_WORKSPACE",
+          "person_id": "person-dpc-02",
+          "role": "PRACTITIONER_USER",
+          "value_packet_ref": "vhp-closet-001",
+          "steps": [
+            {"event": "send_approved", "day": 0, "payload": {"draft": {"channel": "EMAIL", "touch_number": 1, "subject": "3D asset reviews across teams", "body": "Hi Jun — your team page shows three studios collaborating on one 3D asset library. If reviews run over shared drives, version conflicts may cost rework. How are review handoffs managed today? Happy to compare notes on one style's review trail.", "value_packet_ref": "vhp-closet-001", "fact_claim_ids": ["claim-teams-008"], "sender_identity_disclosed": true, "opt_out_affordance": true}}},
+            {"event": "opened", "day": 1},
+            {"event": "opt_out", "day": 2}
+          ]
+        }
+      ]
+    },
+    {
+      "round_id": "round-3",
+      "threads": [
+        {
+          "thread_id": "r3-3dp-channel-switch-nurture",
+          "account_id": "acct-bm-3dp-03",
+          "adapter_id": "INDUSTRIAL_3DP_BASE",
+          "person_id": "person-me-03",
+          "role": "PROBLEM_OWNER",
+          "value_packet_ref": "vhp-3dp-003",
+          "connection_accepted": true,
+          "steps": [
+            {"event": "send_approved", "day": 0, "payload": {"draft": {"channel": "EMAIL", "touch_number": 1, "subject": "Spare parts lead time", "body": "Hi Ms. Duarte — your maintenance posting mentions obsolete spare parts. If replacements are single-sourced overseas, downtime may hinge on one supplier's queue. Is that risk on your radar for this year's line upgrades? I can share how peers dual-source with printed parts.", "value_packet_ref": "vhp-3dp-003", "fact_claim_ids": ["claim-maint-009"], "sender_identity_disclosed": true, "opt_out_affordance": true}}},
+            {"event": "no_reply_window_elapsed", "day": 3},
+            {"event": "followup_due", "day": 3, "payload": {"channel": "EMAIL"}},
+            {"event": "followup_due", "day": 7, "payload": {"channel": "LINKEDIN"}},
+            {"event": "followup_due", "day": 14, "payload": {"channel": "EMAIL"}},
+            {"event": "sequence_exhausted", "day": 17}
+          ]
+        },
+        {
+          "thread_id": "r3-clo-not-now",
+          "account_id": "acct-bm-clo-03",
+          "adapter_id": "CLO_FASHION_DPC",
+          "person_id": "person-pd-03",
+          "role": "ECONOMIC_BUYER",
+          "value_packet_ref": "vhp-clo-003",
+          "steps": [
+            {"event": "send_approved", "day": 0, "payload": {"draft": {"channel": "EMAIL", "touch_number": 1, "subject": "Sample budget per style", "body": "Hi Mr. Novak — congratulations on the new denim line announcement. New lines usually multiply sampling rounds before launch. Is sample spend per style a number your team tracks? If helpful, I can share a 3D-first calculation framework other denim teams use.", "value_packet_ref": "vhp-clo-003", "fact_claim_ids": ["claim-launch-010"], "sender_identity_disclosed": true, "opt_out_affordance": true}}},
+            {"event": "reply_substantive", "day": 2},
+            {"event": "classified_not_now", "day": 3}
+          ]
+        }
+      ]
+    }
+  ]
+}

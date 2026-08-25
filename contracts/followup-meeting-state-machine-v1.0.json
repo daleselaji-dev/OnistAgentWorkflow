@@ -1,0 +1,131 @@
+{
+  "version": "v1.0",
+  "contract_id": "FOLLOWUP_MEETING_STATE_MACHINE",
+  "purpose": "Deterministic follow-up and meeting-booking sub-state machine that refines PERSUASION -> EXECUTION -> MEASUREMENT for one outreach thread (account x product x person). 跟进与约会议是可中断、可测量的状态机，不是自由发挥的节奏。",
+  "sequence_scope": "ACCOUNT_PRODUCT_PERSON",
+  "binding": {
+    "upstream_required": ["account_id", "product_adapter_id", "target_contact_id", "target_role", "value_packet_ref", "qualification_action_class"],
+    "execution_rule": "Every touch that leaves DRAFT_READY passes the EXECUTION policy gate (jurisdiction/suppression/approval/idempotency) individually; the sub-machine never bypasses it.",
+    "reply_rule": "Substantive replies pause the whole ACCOUNT x PRODUCT motion per reply-routing-policy-v1.0, across all parallel person threads."
+  },
+  "channels": ["EMAIL", "LINKEDIN", "WHATSAPP"],
+  "states": {
+    "DRAFT_READY": {"kind": "normal", "description": "channel draft passed OUTREACH_CHANNEL_POLICY gate; awaiting governed send"},
+    "SENT": {"kind": "touch", "description": "touch 1 dispatched through EXECUTION gate; awaiting signal"},
+    "OPENED": {"kind": "normal", "description": "open/read signal observed; still no reply"},
+    "NO_REPLY": {"kind": "normal", "description": "no-reply window elapsed; follow-up scheduling allowed"},
+    "FOLLOWUP_1": {"kind": "touch", "description": "touch 2 sent: same thread, NEW information angle, shorter"},
+    "FOLLOWUP_2": {"kind": "touch", "description": "touch 3 sent: channel or role-framing pivot, opt-down question"},
+    "FOLLOWUP_3": {"kind": "touch", "description": "touch 4 sent: professional breakup + standing value artifact"},
+    "HUMAN_TAKEOVER": {"kind": "interrupt", "description": "substantive reply received; automation paused for the account x product; human classifies and drives"},
+    "MEETING_PROPOSED": {"kind": "normal", "description": "meeting ask sent: 2 concrete slots in recipient timezone, duration, one-line agenda"},
+    "MEETING_BOOKED": {"kind": "normal", "description": "slot accepted; confirmation pack must be completed before confirmed"},
+    "MEETING_CONFIRMED": {"kind": "normal", "description": "confirmation pack complete incl. T-24h reconfirm"},
+    "MEETING_HELD": {"kind": "normal", "description": "meeting happened; debrief mandatory within 24h"},
+    "QUALIFIED_OPPORTUNITY": {"kind": "terminal_success", "description": "pain/fit/next-step confirmed by the buyer; hand off to opportunity motion"},
+    "NURTURE": {"kind": "terminal_recyclable", "description": "fit without timing; re-enters via a NEW timing trigger through QUALIFICATION, never by blind re-send"},
+    "CLOSED_LOST": {"kind": "terminal", "description": "explicit no-fit or hard rejection; reason taxonomy recorded"},
+    "HOLD": {"kind": "interrupt", "description": "policy/approval/jurisdiction/data block; returns to the responsible upstream stage"},
+    "UNSUBSCRIBED": {"kind": "terminal_suppression", "description": "opt-out; suppression list write; no re-entry without new lawful basis"}
+  },
+  "global_interrupts": [
+    {"event": "reply_substantive", "to": "HUMAN_TAKEOVER", "effect": "automation_paused=true for ACCOUNT x PRODUCT before classification"},
+    {"event": "opt_out", "to": "UNSUBSCRIBED", "effect": "suppression write; all threads for the person stop"},
+    {"event": "bounce_hard", "to": "HOLD", "effect": "contact data repair before any further touch"},
+    {"event": "policy_block", "to": "HOLD", "effect": "responsible upstream stage owns the repair"}
+  ],
+  "transitions": [
+    {"from": "DRAFT_READY", "event": "send_approved", "to": "SENT", "guard": "execution_gate_pass"},
+    {"from": "SENT", "event": "opened", "to": "OPENED"},
+    {"from": "SENT", "event": "no_reply_window_elapsed", "to": "NO_REPLY"},
+    {"from": "OPENED", "event": "no_reply_window_elapsed", "to": "NO_REPLY"},
+    {"from": "NO_REPLY", "event": "followup_due", "to": "FOLLOWUP_1", "guard": "cadence_ok"},
+    {"from": "FOLLOWUP_1", "event": "opened", "to": "FOLLOWUP_1"},
+    {"from": "FOLLOWUP_1", "event": "followup_due", "to": "FOLLOWUP_2", "guard": "cadence_ok"},
+    {"from": "FOLLOWUP_2", "event": "opened", "to": "FOLLOWUP_2"},
+    {"from": "FOLLOWUP_2", "event": "followup_due", "to": "FOLLOWUP_3", "guard": "cadence_ok"},
+    {"from": "FOLLOWUP_3", "event": "opened", "to": "FOLLOWUP_3"},
+    {"from": "FOLLOWUP_3", "event": "sequence_exhausted", "to": "NURTURE"},
+    {"from": "HUMAN_TAKEOVER", "event": "classified_meeting_interest", "to": "MEETING_PROPOSED"},
+    {"from": "HUMAN_TAKEOVER", "event": "classified_not_now", "to": "NURTURE"},
+    {"from": "HUMAN_TAKEOVER", "event": "classified_rejection", "to": "CLOSED_LOST"},
+    {"from": "HUMAN_TAKEOVER", "event": "classified_wrong_person", "to": "HOLD", "note": "route back to BUYING_COMMITTEE with referral evidence"},
+    {"from": "HUMAN_TAKEOVER", "event": "resume_automation", "to": "NO_REPLY", "note": "only for non-substantive resolutions (OOO/auto-reply) per reply-routing-policy"},
+    {"from": "MEETING_PROPOSED", "event": "slot_accepted", "to": "MEETING_BOOKED"},
+    {"from": "MEETING_PROPOSED", "event": "declined_soft", "to": "NURTURE"},
+    {"from": "MEETING_PROPOSED", "event": "declined_hard", "to": "CLOSED_LOST"},
+    {"from": "MEETING_PROPOSED", "event": "proposal_reminder_exhausted", "to": "NURTURE", "guard": "reminder_sent_once"},
+    {"from": "MEETING_BOOKED", "event": "confirmation_pack_complete", "to": "MEETING_CONFIRMED", "guard": "confirmation_pack_fields"},
+    {"from": "MEETING_BOOKED", "event": "reschedule_requested", "to": "MEETING_PROPOSED", "guard": "reschedule_cap"},
+    {"from": "MEETING_CONFIRMED", "event": "meeting_held", "to": "MEETING_HELD"},
+    {"from": "MEETING_CONFIRMED", "event": "no_show", "to": "MEETING_PROPOSED", "guard": "reschedule_cap"},
+    {"from": "MEETING_HELD", "event": "outcome_qualified", "to": "QUALIFIED_OPPORTUNITY", "guard": "debrief_complete"},
+    {"from": "MEETING_HELD", "event": "outcome_not_now", "to": "NURTURE", "guard": "debrief_complete"},
+    {"from": "MEETING_HELD", "event": "outcome_no_fit", "to": "CLOSED_LOST", "guard": "debrief_complete"}
+  ],
+  "cadence": {
+    "touch_plan": [
+      {"touch": 1, "state": "SENT", "day_offset": 0, "default_channel": "EMAIL", "template": "T1_OPENER"},
+      {"touch": 2, "state": "FOLLOWUP_1", "day_offset": 3, "default_channel": "EMAIL", "template": "T2_NEW_ANGLE"},
+      {"touch": 3, "state": "FOLLOWUP_2", "day_offset": 7, "default_channel": "LINKEDIN", "template": "T3_ROLE_PIVOT"},
+      {"touch": 4, "state": "FOLLOWUP_3", "day_offset": 14, "default_channel": "EMAIL", "alt_channel": "WHATSAPP_IF_CONSENT", "template": "T4_BREAKUP"}
+    ],
+    "min_interval_days": 3,
+    "no_reply_window_days": 3,
+    "max_touches_per_sequence": 4,
+    "reminder_after_meeting_proposed_days": 2,
+    "max_reschedules": 2,
+    "channel_switch_rules": {
+      "switch_to_new_channel_requires_prior_touches": 2,
+      "return_to_used_channel": "always allowed within frequency limits",
+      "WHATSAPP": "requires consent_or_existing_business_relationship evidence on the sequence",
+      "LINKEDIN": "message requires connection_accepted"
+    },
+    "person_switch_rules": {
+      "allowed_after": ["sequence_exhausted_no_engagement", "wrong_person_referral"],
+      "requires_distinct_buying_role": true,
+      "max_person_switches_per_account_product_90d": 2
+    },
+    "parallel_threads": {
+      "max_active_persons_per_account_product": 3,
+      "distinct_roles_required": true,
+      "substantive_reply_pause_scope": "ACCOUNT_PRODUCT"
+    }
+  },
+  "confirmation_pack_fields": [
+    "agenda_one_liner",
+    "attendee_roles_both_sides",
+    "recipient_timezone_confirmed",
+    "duration_minutes",
+    "dial_in_or_location",
+    "evidence_summary_ref",
+    "t24h_reconfirm_scheduled"
+  ],
+  "debrief_fields": [
+    "notes_to_evidence_ledger",
+    "reply_classification",
+    "next_action"
+  ],
+  "closed_lost_reason_taxonomy": [
+    "NO_TECHNICAL_FIT",
+    "INCUMBENT_LOCKED",
+    "NO_BUDGET_HORIZON",
+    "EXPLICIT_NOT_INTERESTED",
+    "COMPLIANCE_BLOCKED",
+    "ACCOUNT_DISQUALIFIED_UPSTREAM"
+  ],
+  "measurement_events": [
+    "touch_sent", "open", "reply_substantive", "reply_auto", "opt_out",
+    "meeting_proposed", "meeting_booked", "meeting_confirmed", "meeting_held",
+    "qualified_opportunity", "nurture_entered", "closed_lost", "hold_entered"
+  ],
+  "hard_rules": [
+    "A terminal state accepts no further events.",
+    "HUMAN_TAKEOVER can only be exited by an explicit human classification event.",
+    "followup_due earlier than min_interval_days since the last touch is a violation, not a warning.",
+    "Touch count above max_touches_per_sequence is impossible by construction.",
+    "NURTURE re-entry requires a NEW timing trigger and passes QUALIFICATION again; it never restarts the sequence in place.",
+    "MEETING_BOOKED cannot become MEETING_CONFIRMED without the full confirmation pack.",
+    "MEETING_HELD cannot exit without the debrief written back to the evidence ledger."
+  ]
+}
