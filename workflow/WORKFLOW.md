@@ -49,6 +49,21 @@ Production execution additionally requires a resolved jurisdiction policy and ap
 9. CRM attribution does not equal causal incrementality.
 10. C0/C1 evidence cannot broadly promote performance optimization.
 
+## Extension: trade-acquisition outreach sub-machine (v1.0)
+
+`TRADE_ACQUISITION_LOOP_V1` refines `PERSUASION -> EXECUTION -> MEASUREMENT` without changing the top-level spine or any existing gate:
+
+1. **Channel drafts** — the frozen ValueHypothesisPacket renders into Email / LinkedIn / WhatsApp drafts; `workflow/acquisition.py::ChannelDraftGate` enforces `contracts/outreach-channel-policy-v1.0.json` (length, tone register, link count, consent, timezone window, forbidden ROI/spam patterns, unresolved placeholders, evidence traceability). A violating draft never reaches `DRAFT_READY`.
+2. **Follow-up / meeting states** — each governed send enters `contracts/followup-meeting-state-machine-v1.0.json`: `DRAFT_READY -> SENT -> OPENED/NO_REPLY -> FOLLOWUP_1..3 -> NURTURE`, with global interrupts `reply_substantive -> HUMAN_TAKEOVER` (pauses the whole account x product motion), `opt_out -> UNSUBSCRIBED`, `bounce/policy -> HOLD`, and the meeting path `MEETING_PROPOSED -> MEETING_BOOKED -> MEETING_CONFIRMED -> MEETING_HELD -> QUALIFIED_OPPORTUNITY / NURTURE / CLOSED_LOST`. Cadence (>=3-day intervals, <=4 touches, channel/person-switch caps, confirmation pack, debrief) is code-enforced.
+3. **Timing triggers** — `contracts/timing-trigger-taxonomy-v1.0.json` + `score_timing_triggers` order the outbound queue; an undated or unevidenced trigger cannot activate outreach, and trigger scores can never override a hard qualification gate.
+4. **Benchmark loop** — `AcquisitionLoopRunner` replays `examples/trade-acquisition-benchmark.json` rounds deterministically (identical input => identical result hash) and `check_policy_promotion` blocks single-case global policy promotion.
+
+Run the integrated dry-run demo:
+
+```bash
+python workflow/acquisition.py --demo
+```
+
 ## Certification
 
 Run:
