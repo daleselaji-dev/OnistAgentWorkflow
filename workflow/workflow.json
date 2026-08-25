@@ -29,5 +29,28 @@
     "../contracts/canonical-ontology-v1.0.json",
     "../contracts/cross-stage-handoff-contract-v1.0.json",
     "../contracts/stage-eval-matrix-v1.0.json"
+  ],
+  "extensions": [
+    {
+      "id": "TRADE_ACQUISITION_LOOP_V1",
+      "refines": ["PERSUASION", "EXECUTION", "MEASUREMENT"],
+      "runtime": "acquisition.py",
+      "skill": "../skills/trade-acquisition-loop/SKILL.md",
+      "contracts": [
+        "../contracts/timing-trigger-taxonomy-v1.0.json",
+        "../contracts/outreach-channel-policy-v1.0.json",
+        "../contracts/followup-meeting-state-machine-v1.0.json"
+      ],
+      "benchmark": "../examples/trade-acquisition-benchmark.json",
+      "invariants_added": [
+        "undated_or_unevidenced_trigger_cannot_activate_outbound",
+        "draft_must_bind_frozen_value_packet_and_fact_claims",
+        "channel_policy_violation_blocks_draft_ready",
+        "whatsapp_requires_consent_evidence",
+        "cadence_and_touch_caps_enforced_by_state_machine",
+        "meeting_confirmation_pack_and_debrief_mandatory",
+        "single_case_success_cannot_promote_global_policy"
+      ]
+    }
   ]
 }

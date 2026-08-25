@@ -1,0 +1,165 @@
+{
+  "version": "v1.0",
+  "contract_id": "TIMING_TRIGGER_TAXONOMY",
+  "purpose": "Trigger-first targeting: WHEN decides WHO. Discovery and outbound prioritization key off observable, dated, evidence-backed timing triggers instead of static ICP lists. 时机触发是获客的第一排序轴。",
+  "trigger_families": [
+    {
+      "id": "HIRING_SIGNAL",
+      "name_zh": "相关岗位招聘",
+      "observable": "job postings for roles that would own, use, or justify the capability",
+      "example_sources": ["job boards", "company career pages", "recruiter posts"],
+      "freshness_window_days": 60,
+      "qualification_axes": ["intent", "timing"],
+      "min_evidence": "posting URL + role title + posting date",
+      "priority_weight": 0.8,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "hiring additive-manufacturing / tooling / process engineers",
+        "CLO_FASHION_DPC": "hiring 3D fashion designers / CLO artists / digital product creation leads"
+      }
+    },
+    {
+      "id": "EXPANSION",
+      "name_zh": "扩产/新址/新市场",
+      "observable": "new plant, line, office, or market-entry announcement",
+      "example_sources": ["press releases", "local business news", "permits/registries"],
+      "freshness_window_days": 120,
+      "qualification_axes": ["timing", "capacity_strength"],
+      "min_evidence": "announcement source + location + date",
+      "priority_weight": 0.7,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "new production line implies new jigs/fixtures/tooling demand",
+        "CLOSET_3D_WORKSPACE": "new design office / team implies collaboration and asset-versioning load"
+      }
+    },
+    {
+      "id": "TRADE_SHOW",
+      "name_zh": "展会参展/观展",
+      "observable": "exhibitor or attendee listing at a relevant trade fair",
+      "example_sources": ["official exhibitor directories", "show catalogs", "booth announcements"],
+      "freshness_window_days": 45,
+      "window_note": "act from ~30 days before to ~14 days after the show; post-show follow-up references the concrete booth/talk",
+      "qualification_axes": ["timing", "intent"],
+      "min_evidence": "directory entry + show name + show date",
+      "priority_weight": 0.9,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "Formnext/TCT/AMUG exhibitor or industrial fair with prototyping needs",
+        "CLO_FASHION_DPC": "Kingpins/Premiere Vision/ISPO exhibitors with sampling-heavy lines"
+      }
+    },
+    {
+      "id": "REGULATORY",
+      "name_zh": "法规/合规变化",
+      "observable": "new regulation or standard that changes cost/compliance of the current process",
+      "example_sources": ["regulator publications", "industry association guidance"],
+      "freshness_window_days": 180,
+      "qualification_axes": ["pain", "timing"],
+      "min_evidence": "regulation reference + applicability claim for the account",
+      "priority_weight": 0.6,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "part-certification or supply-localization requirements",
+        "CLOFAB_FABRIC_DIGITIZATION": "digital product passport / textile traceability requirements"
+      }
+    },
+    {
+      "id": "TECH_STACK_SHIFT",
+      "name_zh": "技术栈切换",
+      "observable": "adoption or migration signals for adjacent/prerequisite technology",
+      "example_sources": ["tech-stack trackers", "case studies", "job posts mentioning tools"],
+      "freshness_window_days": 90,
+      "qualification_axes": ["fit", "timing"],
+      "min_evidence": "tool/technology mention + source + date",
+      "priority_weight": 0.7,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "CAD/PLM modernization; in-house prototyping lab build-out",
+        "MD_CG_CLOTH": "studio adopting new engine/pipeline needing cloth assets"
+      }
+    },
+    {
+      "id": "COMPETITOR_MOVE",
+      "name_zh": "竞品/同行动态",
+      "observable": "peer company or direct competitor publicly adopts a comparable capability",
+      "example_sources": ["vendor case studies", "industry press", "conference talks"],
+      "freshness_window_days": 120,
+      "qualification_axes": ["intent", "pain"],
+      "min_evidence": "public adoption reference naming the peer",
+      "priority_weight": 0.5,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "competitor insourced tooling production",
+        "CLO_FASHION_DPC": "competitor cut sampling rounds with 3D design"
+      }
+    },
+    {
+      "id": "FUNDING_CAPEX",
+      "name_zh": "融资/资本开支",
+      "observable": "funding round, capex plan, or budget-cycle announcement",
+      "example_sources": ["funding databases", "annual reports", "press"],
+      "freshness_window_days": 180,
+      "qualification_axes": ["capacity_strength", "timing"],
+      "min_evidence": "funding/capex source + amount-or-purpose + date",
+      "priority_weight": 0.6,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "capex earmarked for production modernization",
+        "CLOSET_3D_WORKSPACE": "funded scale-up of design organization"
+      }
+    },
+    {
+      "id": "LEADERSHIP_CHANGE",
+      "name_zh": "关键角色到任",
+      "observable": "new hire/promotion into a decision-relevant role",
+      "example_sources": ["announcements", "professional network updates"],
+      "freshness_window_days": 90,
+      "qualification_axes": ["timing"],
+      "min_evidence": "role change source + role + date; person-level evidence stays person-level",
+      "priority_weight": 0.6,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "new head of manufacturing engineering",
+        "CLO_FASHION_DPC": "new VP of product development / digital transformation lead"
+      }
+    },
+    {
+      "id": "SUPPLY_CHAIN_EVENT",
+      "name_zh": "供应链事件",
+      "observable": "disruption, reshoring, supplier failure, or lead-time crisis affecting the account",
+      "example_sources": ["industry press", "account statements", "logistics indices"],
+      "freshness_window_days": 90,
+      "qualification_axes": ["pain", "timing"],
+      "min_evidence": "event source + account exposure claim",
+      "priority_weight": 0.8,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "outsourced tooling supplier lead-time blowout",
+        "CLOFAB_FABRIC_DIGITIZATION": "physical swatch logistics bottleneck"
+      }
+    },
+    {
+      "id": "NEW_PRODUCT_LAUNCH",
+      "name_zh": "新产品线发布",
+      "observable": "announced product line whose development consumes the capability",
+      "example_sources": ["product press", "catalogs", "social announcements"],
+      "freshness_window_days": 120,
+      "qualification_axes": ["fit", "timing"],
+      "min_evidence": "launch source + product line + date",
+      "priority_weight": 0.7,
+      "adapter_examples": {
+        "INDUSTRIAL_3DP_BASE": "new SKU family with fixture/tooling ramp",
+        "MD_CG_CLOTH": "announced game/film production with character wardrobe needs"
+      }
+    }
+  ],
+  "activation": {
+    "score_formula": "score = sum(priority_weight * freshness_factor) over the account's active evidence-backed triggers",
+    "freshness_factor": "1.0 while (today - observed_date) <= freshness_window_days, else 0.0",
+    "min_score_outbound_now": 0.8,
+    "recommendation_bands": [
+      {"band": "OUTBOUND_NOW", "condition": "score >= 0.8", "maps_to_action_class": "PRIORITIZE_OUTBOUND or FAST_TRACK per qualification"},
+      {"band": "DISCOVERY_OUTREACH", "condition": "0.5 <= score < 0.8", "maps_to_action_class": "DISCOVERY_OUTREACH"},
+      {"band": "MONITOR_NURTURE", "condition": "score < 0.5", "maps_to_action_class": "MONITOR_NURTURE"}
+    ],
+    "no_trigger_rule": "Fit-only accounts without any live trigger go to MONITOR_NURTURE watchlists; cold outbound without a dated trigger is below-standard practice in this system."
+  },
+  "decay_rules": [
+    "An expired trigger downgrades timing to UNKNOWN; it never becomes verified-negative.",
+    "Triggers are evidence-ledger claims: each carries source, observed date, and freshness; an undated trigger cannot activate outbound.",
+    "Trigger score orders the queue; it can never override a hard qualification gate."
+  ],
+  "discovery_recipe": "For each adapter: (job-to-be-done keywords x trigger-family sources x territory language). Trade-show and hiring sources double as discovery source families, so trigger monitoring and universe building share infrastructure."
+}

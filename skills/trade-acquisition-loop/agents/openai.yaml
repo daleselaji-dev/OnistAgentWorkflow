@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trade Acquisition Loop"
+  short_description: "运行受治理的外贸获客闭环:时机调研、渠道定位、触达信起草、跟进与约会议"
+  default_prompt: "Use $trade-acquisition-loop to research timing triggers, plan channel/persona threads, draft Email/WhatsApp/LinkedIn outreach, run the follow-up and meeting state machine, and evaluate the acquisition loop benchmark — all in governed dry-run mode."

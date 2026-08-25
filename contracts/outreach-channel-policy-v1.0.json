@@ -1,0 +1,70 @@
+{
+  "version": "v1.0",
+  "contract_id": "OUTREACH_CHANNEL_POLICY",
+  "purpose": "Deterministic per-channel rendering and dispatch policy for governed outbound drafts. A draft that violates any hard rule here can never reach DRAFT_READY. 渠道适配是确定性代码门禁，不是 agent 自由发挥。",
+  "value_packet_binding": {
+    "required_ref_field": "value_packet_ref",
+    "required_fact_traceability_field": "fact_claim_ids",
+    "sections": ["FACT", "HYPOTHESIS", "MECHANISM", "PROOF", "QUESTION", "PROPOSAL"],
+    "rule": "Every draft must reference a frozen ValueHypothesisPacket and list the evidence claim ids backing its FACT sentence. Renderer may compress language but may not upgrade epistemic status (hypothesis stays conditional, external proof stays possibility)."
+  },
+  "placeholder_syntax": "{{PLACEHOLDER}}",
+  "unresolved_placeholder_rule": "Any remaining {{...}} token in subject or body blocks DRAFT_READY.",
+  "forbidden_patterns": [
+    {"id": "ROI_GUARANTEE_EN", "regex": "(?i)\\bguarantee[sd]?\\b", "reason": "borrowed/promised ROI is forbidden"},
+    {"id": "ROI_NUMERIC_PROMISE", "regex": "(?i)\\b(save|reduce|cut|increase|boost)\\s+(you\\s+|your\\s+)?(up\\s+to\\s+)?\\d+\\s*%", "reason": "numeric outcome promise transplanted to target account"},
+    {"id": "ROI_CLAIM_TRANSPLANT", "regex": "(?i)\\byou\\s+will\\s+(save|achieve|get|see)\\b", "reason": "external case proof presented as target-account certainty"},
+    {"id": "ROI_GUARANTEE_ZH", "regex": "保证(为您)?(节省|提升|降低|回报)|承诺(为您)?(节省|提升|回报)", "reason": "中文承诺型 ROI 禁止"},
+    {"id": "FAKE_FAMILIARITY", "regex": "(?i)long[- ]time follower|big fan of your|i('| ha)ve been following you for", "reason": "fabricated familiarity"},
+    {"id": "PERSON_INTENT_ASSUMPTION", "regex": "(?i)i know you( are|'re) (looking|planning|searching|evaluating)", "reason": "account intent asserted as personal intent"},
+    {"id": "SPAM_OPENER", "regex": "(?i)dear (sir|madam|sir/madam|valued customer)", "reason": "bulk-spam register destroys deliverability and trust"},
+    {"id": "HYPE_SUPERLATIVE", "regex": "(?i)best price|cheapest|world[- ]class factory|100% (quality|satisfaction)|leading manufacturer", "reason": "unverifiable superlatives"},
+    {"id": "FAKE_URGENCY", "regex": "(?i)act now|limited time|last chance|only today", "reason": "pressure tactics forbidden"}
+  ],
+  "channels": {
+    "EMAIL": {
+      "first_touch": {"max_subject_chars": 60, "max_body_words": 120, "max_links": 1, "max_cta": 1},
+      "followup_touch": {"max_body_words": 80, "max_links": 1, "max_cta": 1},
+      "tone": ["specific", "professional", "plain_text", "no_hype", "one_idea_per_message"],
+      "send_window_local": {"start": "08:00", "end": "17:30", "preferred_days": ["TUE", "WED", "THU"]},
+      "frequency": {"min_interval_days": 3, "max_per_person_per_30d": 4},
+      "compliance": {
+        "requires": ["sender_identity_disclosed", "opt_out_affordance", "jurisdiction_resolved"],
+        "regimes_to_resolve_per_deployment": ["CAN_SPAM_US", "GDPR_PECR_EU_UK", "CASL_CA", "PIPL_CN_EXPORT_CONTEXT"]
+      }
+    },
+    "LINKEDIN": {
+      "connection_note": {"max_chars": 300, "max_links": 0, "pitch_allowed": false},
+      "message": {"max_chars": 500, "links_in_first_message": 0, "max_links_followup": 1},
+      "tone": ["peer_to_peer", "conversational", "no_pitch_first_message", "role_relevant_reason"],
+      "send_window_local": {"start": "08:00", "end": "19:00", "preferred_days": ["TUE", "WED", "THU"]},
+      "frequency": {"max_messages_per_7d": 2, "max_connection_requests_per_person": 1},
+      "compliance": {
+        "requires": ["human_executed_no_automation", "platform_tos_respected", "connection_accepted_before_message"]
+      }
+    },
+    "WHATSAPP": {
+      "message": {"max_words": 60, "max_chars": 300, "links_in_first_message": 0},
+      "tone": ["brief", "courteous", "mobile_first", "no_emoji_first_touch", "identify_yourself_first_line"],
+      "send_window_local": {"start": "09:00", "end": "18:00", "preferred_days": ["MON", "TUE", "WED", "THU", "FRI"]},
+      "frequency": {"min_interval_days": 7, "max_per_person_per_30d": 3},
+      "compliance": {
+        "requires": ["consent_or_existing_business_relationship", "business_account_verified", "template_preapproval_for_first_contact", "jurisdiction_resolved"],
+        "hard_rule": "No consent evidence => WhatsApp draft can never reach DRAFT_READY, regardless of score."
+      }
+    }
+  },
+  "timezone_rule": "Recipient local timezone must come from the evidence ledger (office location claim). UNKNOWN timezone blocks scheduling; it never defaults to sender timezone.",
+  "persona_channel_priority": {
+    "PROBLEM_OWNER": ["EMAIL", "LINKEDIN"],
+    "PRACTITIONER_USER": ["LINKEDIN", "EMAIL"],
+    "TECHNICAL_EVALUATOR": ["EMAIL", "LINKEDIN"],
+    "ECONOMIC_BUYER": ["EMAIL", "LINKEDIN"],
+    "EXECUTIVE_SPONSOR": ["LINKEDIN", "EMAIL"],
+    "PROCUREMENT_COMMERCIAL_GATE": ["EMAIL"],
+    "default": ["EMAIL", "LINKEDIN"],
+    "whatsapp_positioning": "WhatsApp is a continuation channel (post trade-show contact, referral, or explicit consent), common in SEA/LATAM/MEA trade contexts; it is never a cold first-touch channel in this policy."
+  },
+  "cross_channel_consistency": "The same ValueHypothesisPacket feeds all channels for one person; channel drafts differ in length/register only. Contradictory value claims across channels for the same person are a hard fail.",
+  "escalation": "Any hard-rule violation blocks DRAFT_READY and emits a repair reason; violations are eval evidence, not silent fixes."
+}

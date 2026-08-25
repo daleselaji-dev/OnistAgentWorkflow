@@ -9,6 +9,15 @@ This repository is the reviewed implementation blueprint derived from a staged d
 - **Industrial 3D printing**
 - **CLO Virtual Fashion family**: CLO, Marvelous Designer, CLOFAB/zFab, CLO-SET
 
+## Trade Acquisition Loop(外贸获客闭环)
+
+v1.0 adds a governed trade-acquisition loop on top of the certified spine — 时机触发式目标筛选、渠道/人员定位、Email/LinkedIn/WhatsApp 触达信、跟进与约会议状态机、可重复 benchmark:
+
+- Skill: [`skills/trade-acquisition-loop/SKILL.md`](skills/trade-acquisition-loop/SKILL.md) (modes: research-timing / channel-persona / draft-outreach / follow-up / meeting-book / eval-loop)
+- Business loop doc: [`docs/trade-acquisition-loop.md`](docs/trade-acquisition-loop.md)
+- Contracts: `contracts/timing-trigger-taxonomy-v1.0.json`, `contracts/outreach-channel-policy-v1.0.json`, `contracts/followup-meeting-state-machine-v1.0.json`
+- Runtime + benchmark: `workflow/acquisition.py`, `examples/trade-acquisition-benchmark.json`, `tests/test_trade_acquisition.py`
+
 ## What “certified” means here
 
 `CERTIFICATION.md` is an **internal engineering certification gate**, not an external legal, regulatory, or third-party certification. A release is certified only when the deterministic workflow tests, contract checks, cross-stage lineage checks, and safety gates pass in CI.
@@ -51,12 +60,13 @@ flowchart LR
 ## Repository structure
 
 ```text
-workflow/                       executable deterministic reference runtime
-skills/account-to-opportunity/ reusable SKILL.md + references
-contracts/                      stage and handoff contracts
-examples/                       industrial-3DP and CLO dry-run artifacts
+workflow/                       executable deterministic reference runtime + acquisition sub-machine
+skills/account-to-opportunity/  reusable SKILL.md + references
+skills/trade-acquisition-loop/  外贸获客闭环 skill + 渠道模板 references
+contracts/                      stage, handoff, channel, cadence and trigger contracts
+examples/                       industrial-3DP and CLO dry-run artifacts + acquisition benchmark
 tests/                          certification tests
-docs/                           final architecture and implementation plan
+docs/                           final architecture, implementation plan and acquisition loop
 .github/workflows/              CI certification gate
 PROJECT.md                      canonical durable project state
 cache/recovery-packet.md        resumable handoff state
@@ -67,6 +77,7 @@ CERTIFICATION.md                certification scope and gate
 
 ```bash
 python workflow/runtime.py --demo
+python workflow/acquisition.py --demo
 python -m unittest discover -s tests -v
 ```
 

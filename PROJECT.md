@@ -1,12 +1,12 @@
 # OnistAgentWorkflow — Project Control
 
-- Status: handoff-close complete; GitHub release ready
+- Status: trade-acquisition loop v1.0 integrated; certified dry-run
 - Run mode: engineering/design project with stage gates
-- Current stage: handoff-close
+- Current stage: trade-acquisition-loop integration
 - Current stage gate: PASS
-- Last stable architecture: `docs/architecture.md`
-- Certified dry-run workflow: `workflow/workflow.json` + `workflow/runtime.py`
-- Reusable skill: `skills/account-to-opportunity/SKILL.md`
+- Last stable architecture: `docs/architecture.md` + `docs/trade-acquisition-loop.md`
+- Certified dry-run workflow: `workflow/workflow.json` + `workflow/runtime.py` + `workflow/acquisition.py`
+- Reusable skills: `skills/account-to-opportunity/SKILL.md`, `skills/trade-acquisition-loop/SKILL.md`
 - Canonical integration version: v1.0
 
 ## Purpose
@@ -32,17 +32,24 @@ Local deterministic test suite must pass before a revision is called `CERTIFIED_
 7. historical calibration data;
 8. experiment assignment/contamination infrastructure.
 
+## Trade acquisition loop (v1.0 extension)
+
+`PERSUASION -> EXECUTION -> MEASUREMENT` is refined into a governed trade-acquisition loop: timing-trigger targeting, channel/persona routing, Email/LinkedIn/WhatsApp draft gates, follow-up + meeting state machine, and a repeatable benchmark harness. See `docs/trade-acquisition-loop.md`, `skills/trade-acquisition-loop/SKILL.md`, `workflow/acquisition.py`, and the three contracts `timing-trigger-taxonomy-v1.0.json` / `outreach-channel-policy-v1.0.json` / `followup-meeting-state-machine-v1.0.json`. All existing gates and `CERTIFIED_DRY_RUN` semantics are unchanged.
+
 ## Resume entry point
 
 Read in order:
 1. `PROJECT.md`
 2. `cache/recovery-packet.md`
 3. `docs/architecture.md`
-4. `workflow/WORKFLOW.md`
-5. `skills/account-to-opportunity/SKILL.md`
-6. `contracts/cross-stage-handoff-contract-v1.0.json`
-7. `contracts/stage-eval-matrix-v1.0.json`
+4. `docs/trade-acquisition-loop.md`
+5. `workflow/WORKFLOW.md`
+6. `skills/account-to-opportunity/SKILL.md`
+7. `skills/trade-acquisition-loop/SKILL.md`
+8. `contracts/cross-stage-handoff-contract-v1.0.json`
+9. `contracts/stage-eval-matrix-v1.0.json`
+10. `contracts/followup-meeting-state-machine-v1.0.json`
 
 ## Next safe action
 
-Select one real product adapter + territory and implement Phase 1 read-only intelligence connectors. Do not enable live sending before production-readiness review.
+Select one real product adapter + territory, implement Phase 1 read-only intelligence connectors, and run the trade-acquisition benchmark against real (read-only) trigger data. Do not enable live sending before production-readiness review.
